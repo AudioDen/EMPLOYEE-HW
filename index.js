@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const inquire = require("inquirer");
-const { start } = require("node:repl");
+//const { start } = require("node:repl");
 const inquirer = require("inquirer");
 
 // create the connection information for the sql database
@@ -14,7 +14,7 @@ const connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "Riley/277",
+  password: "",
   database: "employee_db",
 });
 
@@ -48,7 +48,10 @@ const start = () => {
     });
   connection.end();
 }
+
+////////////////////////////////////////////////////////////
 //adding to the tables
+
 const add = () => {
   inquirer.prompt({
     name: "add",
@@ -106,7 +109,7 @@ addEmployee = () => {
       message: "What is this employees role?",
       choices: ["Manager", "Sales", "Cashier", "Stock"],
     },
-    
+
   ]).then(function (answer) {
     console.log("1 new department added: " + answer.department);
     //send to the table
@@ -138,3 +141,97 @@ addrole = () => {
 
   })
 }
+
+
+///////////////////////////////////////
+///Veiw
+
+
+view = () => {
+  inquirer.prompt([
+    {
+      name: "viewChoice",
+      type: "list",
+      message: "What would you like to view?",
+      choices: ["DEPARTMENTS", "ROLES", "EMPLOYEES", "EXIT"]
+    }
+  ]).then(answer => {
+    if (answer.viewChoice === "DEPARTMENTS") {
+      viewDepartments();
+    }
+    else if (answer.viewChoice === "ROLES") {
+      viewRoles();
+    }
+    else if (answer.viewChoice === "EMPLOYEES") {
+      viewEmployees();
+    }
+    else if (answer.viewChoice === "EXIT") {
+
+
+      connection.end();
+    } else {
+      connection.end();
+    }
+  })
+};
+
+viewDepartments = () => {
+  connection.query("SELECT * FROM department", (err, res) => {
+    if (err) throw err;
+    console.table(department)
+  });
+
+
+};
+viewRoles = () => {
+  connection.query("SELECT * FROM role", (err, res) => {
+    if (err) throw err;
+    console.table(role)
+  });
+
+
+};
+viewEmployee = () => {
+  connection.query("SELECT * FROM employee", (err, res) => {
+    if (err) throw err;
+    console.table(employee)
+  });
+
+
+};
+
+
+
+////////////////////////////////////
+///Update
+update = () => {
+  inquirer.prompt([
+    {
+      name: "update",
+      type: "list",
+      message: "Select update employee role to update.",
+      choices: ["Update Employee role", "EXIT"]
+    }
+  ]).then(answer => {
+    if (answer.update === "Update employee role") {
+      updateEmployeeRole();
+    }
+
+    else if (answer.update === "EXIT") {
+      console.log("Goodbye, Thankyou ")
+    }
+  })
+}
+
+
+updateEmployeeRole = () => {
+  //loopover employees and insert
+
+}
+inquirer.prompt([ { 
+  name: "updateRole",
+  type: "list",
+  choices: "/"
+
+}
+])
