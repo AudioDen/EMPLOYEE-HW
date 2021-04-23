@@ -2,7 +2,10 @@ const mysql = require("mysql");
 const inquire = require("inquirer");
 //const { start } = require("node:repl");
 const inquirer = require("inquirer");
-
+//const { forEach } = require("lodash");
+let departmentArr = [];
+let employeeArr = [];
+let roleArr = [];
 // create the connection information for the sql database
 const connection = mysql.createConnection({
   host: "localhost",
@@ -14,12 +17,13 @@ const connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "",
+  password: "Riley/277",
   database: "employee_db",
 });
 
 connection.connect((err) => {
   if (err) throw err;
+  loadDept();
   start();
 });
 
@@ -29,26 +33,36 @@ const start = () => {
     name: "choices",
     type: "list",
     message: "Welcome to the Employee Tracker. What would like to do?",
-    choices: ["Add", "View,", "Update"],
+    choices: ["Add", "View", "Update", "Exit"],
 
   })
     .then((answer) => {
-      if (answer.choices === "ADD") {
+      if (answer.choices === "Add") {
         add();
       }
-      else if (answer.choices === "VIEW") {
+      else if (answer.choices === "View") {
         view();
       }
-      else if (answer.choices === "UPDATE") {
+      else if (answer.choices === "Update") {
         update();
       }
-      else if (answer.choices === "EXIT") {
+      else if (answer.choices === "Exit") {
         console.log("Goodbye, Thankyou ")
+        connection.end();
       }
     });
-  connection.end();
+  
 }
+////////////////////////////////////////////////////////////
+// Loading Data into arrays
 
+const loadDept = () => {
+  connection.query("SELECT * FROM department", (err, data) => {
+    for(i=0; i<data.length; i++){
+      departmentArr.push(data[i].dep_name)
+    }
+  })
+}
 ////////////////////////////////////////////////////////////
 //adding to the tables
 
@@ -60,24 +74,25 @@ const add = () => {
     choices: ["Department", "Role", "Employee", "Exit",],
   })
     .then((answer) => {
-      if (answer.choices === "Department") {
-        addDeparment();
+      if (answer.add === "Department") {
+        addDepartment();
       }
-      else if (answer.choices === "Role") {
+      else if (answer.add === "Role") {
         addRole();
       }
-      else if (answer.choices === "Employee") {
+      else if (answer.add === "Employee") {
         addEmployee();
       }
-      else if (answer.choices === "EXIT") {
+      else if (answer.add === "Exit") {
         console.log("Goodbye, Thankyou ")
+        connection.end();
       }
     });
-  connection.end();
+  
 
 }
 
-addDepartment = () => {
+const addDepartment = () => {
   inquirer.prompt([
     {
       name: "department",
@@ -85,7 +100,12 @@ addDepartment = () => {
       message: "What department would you like to add?"
     }
   ]).then(function (answer) {
-    console.log("1 new department added: " + answer.department);
+    connection.query("INSERT INTO department(dep_name) VALUES (?)", [answer.department], (err, res) => {
+      if (err) throw err;
+      console.log("1 new department added: " + answer.department);
+      loadDept()
+      start()
+    }) 
     //send to the table
 
   })
@@ -107,7 +127,7 @@ addEmployee = () => {
       name: "role-id",
       type: "list",
       message: "What is this employees role?",
-      choices: ["Manager", "Sales", "Cashier", "Stock"],
+      choices: roleArr,
     },
 
   ]).then(function (answer) {
@@ -117,7 +137,7 @@ addEmployee = () => {
   })
 }
 
-addrole = () => {
+addRole = () => {
   inquirer.prompt([
     {
       name: "title",
@@ -130,15 +150,18 @@ addrole = () => {
       message: "What is the salary for this position?"
     },
     {
-      name: "departmet_id",
+      name: "department_id",
       type: "list",
       message: "Which deparment will be for this position?",
-      choices: ["Manager", "Sales", "Cashier", "Stock"]
+      choices: departmentArr
     },
   ]).then(function (answer) {
-    console.log("1 new role added: " + answer.title, answer.salary, answer.department_id);
     //send to the table
-
+    connection.query("INSERT INTO role (title, salary, department_id) VALUES (?,?,?)", [answer.title, answer.salary, departmentArr.indexOf(answer.department_id) + 1], (err, data) => {
+      if(err) throw err;
+      console.log("1 new role added: " + answer.title, answer.salary, departmentArr.indexOf(answer.department_id) + 1);
+      start()
+    })
   })
 }
 
@@ -178,7 +201,8 @@ view = () => {
 viewDepartments = () => {
   connection.query("SELECT * FROM department", (err, res) => {
     if (err) throw err;
-    console.table(department)
+    console.table(res)
+    start();
   });
 
 
@@ -186,15 +210,18 @@ viewDepartments = () => {
 viewRoles = () => {
   connection.query("SELECT * FROM role", (err, res) => {
     if (err) throw err;
-    console.table(role)
+    console.table(res)
+    start()
   });
 
 
 };
-viewEmployee = () => {
+
+viewEmployees = () => {
   connection.query("SELECT * FROM employee", (err, res) => {
     if (err) throw err;
-    console.table(employee)
+    console.table(res)
+    start()
   });
 
 
@@ -224,14 +251,15 @@ update = () => {
 }
 
 
-updateEmployeeRole = () => {
-  //loopover employees and insert
-
-}
-inquirer.prompt([ { 
-  name: "updateRole",
-  type: "list",
-  choices: "/"
-
-}
-])
+// updateEmployeeRole = () => {
+//   //loopover employees and create array
+// for(i = 0; i < employee table length; i++)
+// i shoulequal employees list?
+// }
+// inquirer.prompt([ { 
+//   name: "updateRole",
+//   type: "list",
+//   message: "Which employee's role would you like to update?",
+//   choices: /// CHOICE OF  EMPLOYEES
+// }
+// ])
