@@ -23,6 +23,7 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
+  loadEmployee();
   loadDept();
   loadRole();
   start();
@@ -69,6 +70,13 @@ const loadRole = () => {
   connection.query("SELECT id, title FROM role", (err, data) => {
     for (i = 0; i < data.length; i++)
       roleArr.push(data[i].title)
+  })
+}
+
+const  loadEmployee = () => { 
+  connection.query ("SELECT * FROM employee", (err, data) => {
+    for (i = 0; i < data.length; i++)
+    employeeArr.data[i];
   })
 }
 ////////////////////////////////////////////////////////////
@@ -142,6 +150,8 @@ const addEmployee = () => {
   ]).then(function (answer) {
     console.log("1 new employee added: " + answer.first_name, answer.last_name, answer.role_id);
     //send to the table
+connection.query("INSERT INTO employee (first_name, last_name, role_id) VALUES(?,?,?)", [answer.first_name, answer.last_name, roleArr.indexOf(answer.role_id) + 1]);
+
 
   })
 }
