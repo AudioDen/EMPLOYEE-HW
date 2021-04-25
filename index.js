@@ -24,6 +24,7 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
   if (err) throw err;
   loadDept();
+  loadRole();
   start();
 });
 
@@ -51,16 +52,23 @@ const start = () => {
         connection.end();
       }
     });
-  
+
 }
 ////////////////////////////////////////////////////////////
 // Loading Data into arrays
 
 const loadDept = () => {
   connection.query("SELECT * FROM department", (err, data) => {
-    for(i=0; i<data.length; i++){
+    for (i = 0; i < data.length; i++) {
       departmentArr.push(data[i].dep_name)
     }
+  })
+}
+
+const loadRole = () => {
+  connection.query("SELECT id, title FROM role", (err, data) => {
+    for (i = 0; i < data.length; i++)
+      roleArr.push(data[i].title)
   })
 }
 ////////////////////////////////////////////////////////////
@@ -88,7 +96,7 @@ const add = () => {
         connection.end();
       }
     });
-  
+
 
 }
 
@@ -102,16 +110,17 @@ const addDepartment = () => {
   ]).then(function (answer) {
     connection.query("INSERT INTO department(dep_name) VALUES (?)", [answer.department], (err, res) => {
       if (err) throw err;
-      console.log("1 new department added: " + answer.department);
       loadDept()
+      console.log("1 new department added: " + answer.department);
+      viewDepartments();
       start()
-    }) 
+    })
     //send to the table
 
   })
 }
 
-addEmployee = () => {
+const addEmployee = () => {
   inquirer.prompt([
     {
       name: "first_name",
@@ -124,20 +133,20 @@ addEmployee = () => {
       message: "What is this employees last name?"
     },
     {
-      name: "role-id",
+      name: "role_id",
       type: "list",
       message: "What is this employees role?",
       choices: roleArr,
     },
 
   ]).then(function (answer) {
-    console.log("1 new department added: " + answer.department);
+    console.log("1 new employee added: " + answer.first_name, answer.last_name, answer.role_id);
     //send to the table
 
   })
 }
 
-addRole = () => {
+const addRole = () => {
   inquirer.prompt([
     {
       name: "title",
@@ -158,7 +167,7 @@ addRole = () => {
   ]).then(function (answer) {
     //send to the table
     connection.query("INSERT INTO role (title, salary, department_id) VALUES (?,?,?)", [answer.title, answer.salary, departmentArr.indexOf(answer.department_id) + 1], (err, data) => {
-      if(err) throw err;
+      if (err) throw err;
       console.log("1 new role added: " + answer.title, answer.salary, departmentArr.indexOf(answer.department_id) + 1);
       start()
     })
@@ -170,7 +179,7 @@ addRole = () => {
 ///Veiw
 
 
-view = () => {
+const view = () => {
   inquirer.prompt([
     {
       name: "viewChoice",
@@ -198,7 +207,7 @@ view = () => {
   })
 };
 
-viewDepartments = () => {
+const viewDepartments = () => {
   connection.query("SELECT * FROM department", (err, res) => {
     if (err) throw err;
     console.table(res)
@@ -207,7 +216,7 @@ viewDepartments = () => {
 
 
 };
-viewRoles = () => {
+const viewRoles = () => {
   connection.query("SELECT * FROM role", (err, res) => {
     if (err) throw err;
     console.table(res)
@@ -217,7 +226,7 @@ viewRoles = () => {
 
 };
 
-viewEmployees = () => {
+const viewEmployees = () => {
   connection.query("SELECT * FROM employee", (err, res) => {
     if (err) throw err;
     console.table(res)
@@ -231,13 +240,13 @@ viewEmployees = () => {
 
 ////////////////////////////////////
 ///Update
-update = () => {
+const update = () => {
   inquirer.prompt([
     {
       name: "update",
       type: "list",
       message: "Select update employee role to update.",
-      choices: ["Update Employee role", "EXIT"]
+      choices: ["Update employee role", "EXIT"]
     }
   ]).then(answer => {
     if (answer.update === "Update employee role") {
@@ -250,6 +259,17 @@ update = () => {
   })
 }
 
+
+const updateEmployeeRole = () => {
+  inquirer.prompt([
+    {
+      name: "employee_choice",
+      type: "list",
+      message: "Choose employee?",
+      choices: employeeArr
+    }
+  ])
+}
 
 // updateEmployeeRole = () => {
 //   //loopover employees and create array
