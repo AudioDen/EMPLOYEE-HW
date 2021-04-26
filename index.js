@@ -74,9 +74,9 @@ const loadRole = () => {
 }
 
 const  loadEmployee = () => { 
-  connection.query ("SELECT * FROM employee", (err, data) => {
-    for (i = 0; i < data.length; i++)
-    employeeArr.data[i];
+  connection.query ("SELECT CONCAT_WS(' ' ,first_name, last_name, role_id) AS newEmployee FROM employee", (err, data) => {
+    for(i = 0; i < data.length; i++)
+    employeeArr.push.data[i];
   })
 }
 ////////////////////////////////////////////////////////////
@@ -275,11 +275,36 @@ const updateEmployeeRole = () => {
     {
       name: "employee_choice",
       type: "list",
-      message: "Choose employee?",
+      message: "which employee's role would you like to",
       choices: employeeArr
     }
   ])
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // updateEmployeeRole = () => {
 //   //loopover employees and create array
@@ -293,3 +318,36 @@ const updateEmployeeRole = () => {
 //   choices: /// CHOICE OF  EMPLOYEES
 // }
 // ])
+// function getChoices (){
+//   var exampleChoices = [
+//        {name: "Manager1", value: 1},
+//        {name: "Manager2", value: 2}, 
+//        {name: "Manager3", value: 3}, 
+//      ]
+//   return exampleChoices
+// } inquirer.prompt({
+//   name: "managerSelect",
+//   type: "list",
+//   message: "Who is this new Employee's manager?",
+//   choices: getChoices(), //this function should return an array of employees that looks like the example array below
+// })
+
+// getChoices should return something that looks like this:
+//    [
+//      {name: "Manager1", value: 1},
+// //user sees Manager1. Selecting this choice makes answer.managerSelect have the value 1.
+//      {name: "Manager2", value: 2}, 
+//      {name: "Manager3", value: 3}, 
+//    ]
+//    inquirer.prompt({
+//     name: "managerSelect",
+//     type: "list",
+//     message: "Who is this new Employee's manager?",
+//     choices: [
+//        {name: "Manager1", value: 1},
+// //user sees Manager1. Selecting this choice makes answer.managerSelect have the value 1.
+//        {name: "Manager2", value: 2}, 
+//        {name: "Manager3", value: 3}, 
+//      ],
+
+//   })
