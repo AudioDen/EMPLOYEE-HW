@@ -23,7 +23,7 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
-  loadEmployee();
+  //loadEmployee();
   loadDept();
   loadRole();
   start();
@@ -73,10 +73,10 @@ const loadRole = () => {
   })
 }
 
-const  loadEmployee = () => { 
-  connection.query ("SELECT CONCAT_WS(' ' ,first_name, last_name, role_id) AS newEmployee FROM employee", (err, data) => {
-    for(i = 0; i < data.length; i++)
-    employeeArr.push.data[i];
+const loadEmployee = () => {
+  connection.query("SELECT CONCAT_WS(' ' ,first_name, last_name, role_id) AS newEmployee FROM employee", (err, data) => {
+    for (i = 0; i < data.length; i++)
+      employeeArr.push.data[i];
   })
 }
 ////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ const addDepartment = () => {
       loadDept()
       console.log("1 new department added: " + answer.department);
       viewDepartments();
-      start()
+      //start()
     })
     //send to the table
 
@@ -150,10 +150,11 @@ const addEmployee = () => {
   ]).then(function (answer) {
     console.log("1 new employee added: " + answer.first_name, answer.last_name, answer.role_id);
     //send to the table
-connection.query("INSERT INTO employee (first_name, last_name, role_id) VALUES(?,?,?)", [answer.first_name, answer.last_name, roleArr.indexOf(answer.role_id) + 1]);
-
+    connection.query("INSERT INTO employee (first_name, last_name, role_id) VALUES(?,?,?)", [answer.first_name, answer.last_name, roleArr.indexOf(answer.role_id) + 1]);
+    start();
 
   })
+
 }
 
 const addRole = () => {
