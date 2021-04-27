@@ -23,7 +23,7 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
-  //loadEmployee();
+  loadEmployee();
   loadDept();
   loadRole();
   start();
@@ -75,8 +75,9 @@ const loadRole = () => {
 
 const loadEmployee = () => {
   connection.query("SELECT CONCAT_WS(' ' ,first_name, last_name, role_id) AS newEmployee FROM employee", (err, data) => {
-    for (i = 0; i < data.length; i++)
-      employeeArr.push.data[i];
+    //console.log(data)
+    for (i = 1; i < data.length; i++)
+      employeeArr.push(data)[i];
   })
 }
 ////////////////////////////////////////////////////////////
